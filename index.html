@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sky Runner</title>
+  <meta name="description" content="Jogo runner casual com layout preparado para monetização com anúncios display em posições compatíveis." />
+
+  <!-- Google AdSense: código de verificação/carregamento -->
+  <script async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2448783174311133"
+    crossorigin="anonymous"></script>
+
+  <style>
+    :root {
+      --bg1: #081120;
+      --bg2: #13233f;
+      --card: rgba(255,255,255,0.08);
+      --line: rgba(255,255,255,0.12);
+      --text: #eef5ff;
+      --muted: #a7b9d7;
+      --accent: #7c3aed;
+      --accent2: #22d3ee;
+      --good: #bbf7d0;
+      --goodbg: rgba(20,83,45,.28);
+      --shadow: 0 18px 60px rgba(2,8,23,.38);
+      --radius: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(124,58,237,.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(34,211,238,.12), transparent 24%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 20px 16px 48px;
+    }
+
+    .hero, .panel, .ad-slot, .footer {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .hero {
+      padding: 24px;
+      margin-bottom: 18px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .kicker {
+      display: inline-flex;
+      padding: 7px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.08);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    h1,h2,h3,p { margin: 0; }
+
+    h1 {
+      font-size: 44px;
+      line-height: 1.02;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      max-width: 680px;
+    }
+
+    .chips {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .chip {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .ad-slot {
+      min-height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 18px;
+      color: var(--muted);
+    }
+
+    .ad-slot strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 18px;
+    }
+
+    .panel {
+      padding: 20px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 12px;
+      background: rgba(255,255,255,.04);
+    }
+
+    .stat .label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .stat .value {
+      font-size: 24px;
+      font-weight: 800;
+      margin-top: 6px;
+    }
+
+    canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 20px;
+      background: linear-gradient(180deg, #0f1b35, #1b335a);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+    }
+
+    button.secondary {
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+
+    .game-note {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+
+    .sidebar > * + * {
+      margin-top: 14px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(255,255,255,.04);
+    }
+
+    .card p, .card li {
+      color: var(--muted);
+    }
+
+    .card h3 {
+      margin-bottom: 8px;
+    }
+
+    .result {
+      display: none;
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(34,197,94,.35);
+      background: var(--goodbg);
+      color: var(--good);
+    }
+
+    .footer {
+      padding: 18px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    ul {
+      margin: 10px 0 0;
+      padding-left: 18px;
+    }
+
+    @media (max-width: 960px) {
+      .hero-grid, .layout, .stats {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="kicker">Jogo casual + layout para anúncios</div>
+          <h1>Sky Runner</h1>
+          <p>Um runner simples no estilo endless, com posições de anúncio separadas do gameplay. O objetivo é publicar um jogo divertido e, depois da aprovação, monetizar com blocos do AdSense colocados em áreas adequadas da página.</p>
+          <div class="chips">
+            <div class="chip">1 clique para jogar</div>
+            <div class="chip">HTML único</div>
+            <div class="chip">Pronto para GitHub Pages</div>
+            <div class="chip">Preparado para AdSense</div>
+          </div>
+        </div>
+
+        <aside class="ad-slot">
+          <div>
+            <strong>Área de anúncio superior</strong>
+            <div>Após a aprovação do AdSense, substitua este conteúdo por um bloco de anúncio.</div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <div class="layout">
+      <main class="panel">
+        <div class="stats">
+          <div class="stat">
+            <div class="label">Pontuação</div>
+            <div class="value" id="score">0</div>
+          </div>
+          <div class="stat">
+            <div class="label">Recorde</div>
+            <div class="value" id="best">0</div>
+          </div>
+          <div class="stat">
+            <div class="label">Velocidade</div>
+            <div class="value" id="speed">1x</div>
+          </div>
+          <div class="stat">
+            <div class="label">Status</div>
+            <div class="value" id="status">Pronto</div>
+          </div>
+        </div>
+
+        <canvas id="game" width="900" height="320" aria-label="Sky Runner game"></canvas>
+
+        <div class="controls">
+          <button id="startBtn" type="button">Jogar</button>
+          <button id="restartBtn" type="button" class="secondary">Reiniciar</button>
+        </div>
+
+        <div class="game-note">
+          Controles: <strong>Espaço</strong>, <strong>Seta para cima</strong> ou toque na tela para pular.
+          Depois que seu site for aprovado, você pode substituir as áreas de anúncio pelos blocos reais do AdSense.
+        </div>
+
+        <div id="gameOverBox" class="result"></div>
+
+        <div class="ad-slot" style="margin-top:16px; min-height:140px;">
+          <div>
+            <strong>Área de anúncio abaixo do jogo</strong>
+            <div>Substitua este espaço por um bloco de anúncio depois da aprovação.</div>
+          </div>
+        </div>
+      </main>
+
+      <aside class="sidebar">
+        <div class="card">
+          <h3>Como monetizar</h3>
+          <p>O ganho vem de visitantes reais jogando e navegando pela página. Os anúncios devem ficar separados do jogo e dos botões.</p>
+          <ul>
+            <li>bloco acima do jogo</li>
+            <li>bloco abaixo do jogo</li>
+            <li>bloco lateral em telas grandes</li>
+          </ul>
+        </div>
+
+        <div class="ad-slot">
+          <div>
+            <strong>Área de anúncio lateral</strong>
+            <div>Substitua este conteúdo por um bloco responsivo do AdSense após a aprovação.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Para aumentar receita</h3>
+          <ul>
+            <li>publique mais jogos simples</li>
+            <li>adicione páginas de política e contato</li>
+            <li>melhore SEO do título e descrição</li>
+            <li>atraia tráfego real por busca e redes sociais</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      Este arquivo já contém o script de verificação do AdSense no local correto. Depois da aprovação, você pode trocar as áreas de anúncio pelos blocos reais gerados no painel do AdSense.
+    </footer>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+
+    const scoreEl = document.getElementById('score');
+    const bestEl = document.getElementById('best');
+    const speedEl = document.getElementById('speed');
+    const statusEl = document.getElementById('status');
+    const gameOverBox = document.getElementById('gameOverBox');
+    const startBtn = document.getElementById('startBtn');
+    const restartBtn = document.getElementById('restartBtn');
+
+    let best = Number(localStorage.getItem('sky-runner-best') || 0);
+    bestEl.textContent = best;
+
+    const groundY = 260;
+    let animationId = null;
+    let started = false;
+    let running = false;
+    let score = 0;
+    let gameSpeed = 5;
+    let frame = 0;
+    let spawnTimer = 0;
+
+    const player = {
+      x: 90,
+      y: groundY - 42,
+      w: 34,
+      h: 42,
+      vy: 0,
+      gravity: 0.68,
+      jump: -12,
+      onGround: true
+    };
+
+    let obstacles = [];
+    let stars = [];
+
+    function resetGame() {
+      score = 0;
+      gameSpeed = 5;
+      frame = 0;
+      spawnTimer = 0;
+      obstacles = [];
+      stars = Array.from({ length: 18 }, (_, i) => ({
+        x: (i + 1) * 60,
+        y: 20 + Math.random() * 120,
+        r: 1 + Math.random() * 2
+      }));
+
+      player.y = groundY - player.h;
+      player.vy = 0;
+      player.onGround = true;
+
+      scoreEl.textContent = '0';
+      speedEl.textContent = '1x';
+      statusEl.textContent = 'Pronto';
+      gameOverBox.style.display = 'none';
+
+      draw();
+    }
+
+    function startGame() {
+      if (running) return;
+      if (!started) started = true;
+      running = true;
+      statusEl.textContent = 'Jogando';
+      gameLoop();
+    }
+
+    function endGame() {
+      running = false;
+      cancelAnimationFrame(animationId);
+      statusEl.textContent = 'Game Over';
+
+      if (score > best) {
+        best = score;
+        localStorage.setItem('sky-runner-best', String(best));
+        bestEl.textContent = String(best);
+      }
+
+      gameOverBox.style.display = 'block';
+      gameOverBox.innerHTML = `Game over. Você fez <strong>${score}</strong> ponto(s). Recorde: <strong>${best}</strong>.`;
+    }
+
+    function jump() {
+      if (!running) {
+        startGame();
+        return;
+      }
+
+      if (player.onGround) {
+        player.vy = player.jump;
+        player.onGround = false;
+      }
+    }
+
+    function spawnObstacle() {
+      const h = 24 + Math.random() * 30;
+      const w = 18 + Math.random() * 18;
+      obstacles.push({
+        x: canvas.width + 20,
+        y: groundY - h,
+        w,
+        h
+      });
+    }
+
+    function update() {
+      frame += 1;
+      score += 1;
+      scoreEl.textContent = String(score);
+
+      gameSpeed = 5 + Math.floor(score / 180);
+      speedEl.textContent = `${(gameSpeed / 5).toFixed(1)}x`;
+
+      player.vy += player.gravity;
+      player.y += player.vy;
+
+      if (player.y >= groundY - player.h) {
+        player.y = groundY - player.h;
+        player.vy = 0;
+        player.onGround = true;
+      }
+
+      spawnTimer += 1;
+      const nextSpawnAt = Math.max(45, 95 - Math.min(55, Math.floor(score / 25)));
+
+      if (spawnTimer >= nextSpawnAt) {
+        spawnObstacle();
+        spawnTimer = 0;
+      }
+
+      for (const star of stars) {
+        star.x -= gameSpeed * 0.25;
+        if (star.x < -5) {
+          star.x = canvas.width + Math.random() * 80;
+          star.y = 20 + Math.random() * 120;
+        }
+      }
+
+      obstacles.forEach(o => {
+        o.x -= gameSpeed;
+      });
+
+      obstacles = obstacles.filter(o => o.x + o.w > -20);
+
+      for (const o of obstacles) {
+        const hit =
+          player.x < o.x + o.w &&
+          player.x + player.w > o.x &&
+          player.y < o.y + o.h &&
+          player.y + player.h > o.y;
+
+        if (hit) {
+          endGame();
+          return;
+        }
+      }
+    }
+
+    function drawBackground() {
+      const g = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      g.addColorStop(0, '#0f1b35');
+      g.addColorStop(1, '#1c3762');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      stars.forEach(s => {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.fillStyle = '#91d5ff';
+      ctx.beginPath();
+      ctx.moveTo(0, groundY + 18);
+      ctx.lineTo(canvas.width, groundY + 18);
+      ctx.lineTo(canvas.width, canvas.height);
+      ctx.lineTo(0, canvas.height);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = 'rgba(255,255,255,.2)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(0, groundY + 0.5);
+      ctx.lineTo(canvas.width, groundY + 0.5);
+      ctx.stroke();
+    }
+
+    function drawPlayer() {
+      ctx.fillStyle = '#8b5cf6';
+      ctx.fillRect(player.x, player.y, player.w, player.h);
+
+      ctx.fillStyle = '#22d3ee';
+      ctx.fillRect(player.x + 8, player.y - 8, 18, 10);
+
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(player.x + 22, player.y + 8, 4, 4);
+    }
+
+    function drawObstacles() {
+      ctx.fillStyle = '#f97316';
+      obstacles.forEach(o => ctx.fillRect(o.x, o.y, o.w, o.h));
+    }
+
+    function drawIntro() {
+      ctx.fillStyle = 'rgba(255,255,255,.9)';
+      ctx.font = 'bold 28px Inter, sans-serif';
+      ctx.fillText('Clique em Jogar ou pressione Espaço', 210, 90);
+
+      ctx.font = '16px Inter, sans-serif';
+      ctx.fillStyle = 'rgba(255,255,255,.75)';
+      ctx.fillText('Evite os obstáculos e faça o maior score possível.', 270, 122);
+    }
+
+    function draw() {
+      drawBackground();
+      drawObstacles();
+      drawPlayer();
+
+      if (!started) {
+        drawIntro();
+      }
+    }
+
+    function gameLoop() {
+      if (!running) return;
+      update();
+      draw();
+      animationId = requestAnimationFrame(gameLoop);
+    }
+
+    function hardRestart() {
+      cancelAnimationFrame(animationId);
+      running = false;
+      started = false;
+      resetGame();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.code === 'ArrowUp') {
+        e.preventDefault();
+        jump();
+      }
+    });
+
+    canvas.addEventListener('pointerdown', jump);
+    startBtn.addEventListener('click', startGame);
+    restartBtn.addEventListener('click', hardRestart);
+
+    resetGame();
+  </script>
+</body>
+</html>
