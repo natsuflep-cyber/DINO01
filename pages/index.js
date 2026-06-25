@@ -86,7 +86,7 @@ export default function Home() {
       setStatusTexto('Vídeo fatiado com 100% de aproveitamento!');
     } catch (erro) {
       console.error(erro);
-      alert('Erro ao cortar o vídeo de forma inteligente.');
+      alert('ERRO: FUNCIONAMOS APENAS EM PC.');
     } finally {
       setCarregando(false);
     }
